@@ -1,9 +1,40 @@
+import { useState } from "react";
+import { postUsers, fetchUsers } from "#/lib/users";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+
 function Home() {
-  // postUsers({ data: { name: "John Doe", email: "john.doe@example.com" } });
+  const queryClient = useQueryClient();
 
-  // const users = fetchUsers();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
 
-  // console.log(users);
+  const users = useQuery({
+    queryKey: ["users"],
+    queryFn: fetchUsers,
+  });
+
+  const { mutate: postUsersMutation } = useMutation({
+    mutationFn: postUsers,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+    },
+  });
+
+  const handlePostUsers = async () => {
+    postUsersMutation(
+      {
+        data: { name, email },
+      },
+      {
+        onSuccess: () => {
+          console.log("User created successfully");
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+      }
+    );
+  };
 
   return (
     <main className='page-wrap px-4 pb-8 pt-14'>
@@ -19,21 +50,38 @@ function Home() {
           structure, and the essentials you need to build from scratch.
         </p>
         <div className='flex flex-wrap gap-3'>
-          <a
-            href='/about'
-            className='rounded-full border border-[rgba(50,143,151,0.3)] bg-[rgba(79,184,178,0.14)] px-5 py-2.5 text-sm font-semibold text-[var(--lagoon-deep)] no-underline transition hover:-translate-y-0.5 hover:bg-[rgba(79,184,178,0.24)]'
+          <input
+            className='border-1 rounded-full px-4 py-2'
+            type='text'
+            placeholder='Name'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <input
+            className='border-1 rounded-full px-4 py-2'
+            type='email'
+            placeholder='Email'
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <button
+            className='border-1 rounded-full px-4 py-2'
+            onClick={handlePostUsers}
           >
-            About This Starter
-          </a>
-          <a
-            href='https://tanstack.com/router'
-            target='_blank'
-            rel='noopener noreferrer'
-            className='rounded-full border border-[rgba(23,58,64,0.2)] bg-white/50 px-5 py-2.5 text-sm font-semibold text-[var(--sea-ink)] no-underline transition hover:-translate-y-0.5 hover:border-[rgba(23,58,64,0.35)]'
-          >
-            Router Guide
-          </a>
+            Register
+          </button>
         </div>
+
+        {users.data && (
+          <div>
+            <h2>Users</h2>
+            <ul>
+              {users.data.map((user) => (
+                <li key={user.id}>{user.name}</li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
 
       <section className='mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4'>
