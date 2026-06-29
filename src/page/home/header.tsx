@@ -7,9 +7,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-black">
       <div className="container mx-auto flex flex-row items-center justify-between px-8 py-3">
         <div className="flex flex-row items-center gap-2">
-          <BaseLabel color="DarkRed">
-            <p>租屋</p>
-          </BaseLabel>
+          <BaseLabel color="DarkRed">租屋</BaseLabel>
 
           <h1 className="font-bold text-white">公開誌</h1>
         </div>
