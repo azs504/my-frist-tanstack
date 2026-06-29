@@ -2,8 +2,8 @@ import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import Footer from "../components/Footer";
-import Header from "../components/Header";
+import Footer from "#/page/home/footer";
+import Header from "#/page/home/header";
 
 import appCss from "../styles.css?url";
 
@@ -37,18 +37,18 @@ const queryClient = new QueryClient();
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
       <body
-        className='font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]'
+        className="flex min-h-screen flex-col font-sans [overflow-wrap:anywhere] antialiased selection:bg-[rgba(79,184,178,0.24)]"
         suppressHydrationWarning
       >
         <QueryClientProvider client={queryClient}>
           <Header />
-          {children}
+          <main className="flex-1 bg-[#F4F2ED]">{children}</main>
           <Footer />
           <TanStackDevtools
             config={{
