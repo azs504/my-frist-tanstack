@@ -30,6 +30,12 @@ export const Route = createRootRoute({
       },
     ],
   }),
+
+  notFoundComponent: () => (
+    <div className="p-8">
+      <h1>Page Not Found</h1>
+    </div>
+  ),
   shellComponent: RootDocument,
 });
 
