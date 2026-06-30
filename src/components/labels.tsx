@@ -6,6 +6,7 @@ export const Color = {
   LightYellow: "#FFF9C1",
   LightBlue: "#B3D9FF",
   LightGreen: "#B3FFB3",
+  LightGray: "#EDE9E2",
 } as const;
 
 export function BaseLabel({

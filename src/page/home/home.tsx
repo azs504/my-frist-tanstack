@@ -9,13 +9,34 @@ import { Color } from "#/components/labels";
 
 type PostCategory = "惡房東" | "市場行情" | "租屋技巧" | "社區評價";
 
+type Location =
+  | "台北市"
+  | "新北市"
+  | "基隆市"
+  | "桃園市"
+  | "新竹市"
+  | "新竹縣"
+  | "苗栗縣"
+  | "台中市"
+  | "彰化縣"
+  | "南投縣"
+  | "雲林縣"
+  | "嘉義縣"
+  | "台南市"
+  | "高雄市"
+  | "屏東縣"
+  | "宜蘭縣"
+  | "花蓮縣"
+  | "台東縣";
+
 type PostData = {
   id: string;
   title: string;
   content: string;
-  location: string;
+  location: Location;
   category: PostCategory;
   isTop: boolean;
+  tags: string[];
 };
 
 const postDummyData: PostData[] = [
@@ -35,6 +56,7 @@ const postDummyData: PostData[] = [
     location: "台北市",
     category: "惡房東",
     isTop: true,
+    tags: ["押金糾紛", "信義區", "法律"],
   },
 ];
 
@@ -110,6 +132,19 @@ function PostCard({ post }: { post: PostData }) {
         <p className="line-clamp-2 text-[14px] text-[#8F8984]">
           {post.content}
         </p>
+      </div>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        {post.tags.map((tag) => (
+          <BaseLabel
+            key={tag}
+            className="text-[12px] font-bold text-[#3D2E1B]"
+            color="LightGray"
+            borderRadius="15px"
+          >
+            ＃{tag}
+          </BaseLabel>
+        ))}
       </div>
 
       <div className="mt-4 h-[1px] w-full bg-[#EAEAEA]" />
