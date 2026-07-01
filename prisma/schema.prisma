@@ -13,7 +13,7 @@ datasource db {
 }
 
 model UserProfile {
-  id        String   @id @default(uuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   index     Int      @default(autoincrement())
   email     String   @unique
   name      String?
@@ -24,7 +24,7 @@ model UserProfile {
 }
 
 model Post {
-  id        String   @id @default(uuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title     String
   content   String
   location  String
@@ -33,7 +33,7 @@ model Post {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId    String
+  userId    String   @db.Uuid
   user      UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
   
   tags      PostTag[]
@@ -45,28 +45,28 @@ model Post {
 }
 
 model Comment {
-  id        String   @id @default(uuid())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  userId    String
+  userId    String   @db.Uuid
   user      UserProfile @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  postId    String
+  postId    String   @db.Uuid
   post      Post @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 model Tag {
-  id    String  @id @default(uuid())
+  id    String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name  String  @unique
   posts PostTag[]
 }
 
 model PostTag {
-  id     String @id @default(uuid())
-  postId String
-  tagId  String
+  id     String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  postId String   @db.Uuid
+  tagId  String   @db.Uuid
 
   post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
   tag  Tag  @relation(fields: [tagId], references: [id], onDelete: Cascade)
