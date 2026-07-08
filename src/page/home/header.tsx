@@ -1,8 +1,15 @@
 import { BaseLabel } from "#/components/labels.tsx";
+import { BaseInput } from "#/components/inputs";
 import { GoSearch } from "react-icons/go";
 import { CiLogin } from "react-icons/ci";
+import { Popup } from "#/components/popup";
+import { useState } from "react";
+import { PrimaryButton } from "#/components/buttons";
 
 export default function Header() {
+  const [displayPopup, setDisplayPopup] = useState(false);
+  const [isRegister, setIsRegister] = useState(false);
+
   return (
     <header className="sticky top-0 z-50 bg-black">
       <div className="container mx-auto flex flex-row items-center justify-between px-8 py-3">
@@ -21,11 +28,90 @@ export default function Header() {
           <GoSearch className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400" />
         </div>
 
-        <div className="flex cursor-pointer items-center gap-2 text-[#D7D3D1] hover:text-white">
+        <div
+          onClick={() => setDisplayPopup(true)}
+          className="flex cursor-pointer items-center gap-2 text-[#D7D3D1] hover:text-white"
+        >
           <CiLogin />
           <p>登入</p>
         </div>
       </div>
+
+      <Popup display={displayPopup} onClose={() => setDisplayPopup(false)}>
+        <div className="flex min-h-[385px] min-w-[300px] flex-col gap-3">
+          {isRegister ? <Register /> : <Login />}
+
+          <div className="flex flex-row items-center justify-center gap-2">
+            <p className="text-sm">還沒有帳號？</p>
+            <p
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsRegister((prev) => !prev);
+              }}
+              className="cursor-pointer font-bold text-blue-500"
+            >
+              立即註冊
+            </p>
+          </div>
+        </div>
+      </Popup>
     </header>
+  );
+}
+
+function Register() {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  return (
+    <>
+      <p className="text-center text-2xl font-bold">加入社群</p>
+      <p>用戶名稱</p>
+      <BaseInput
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+        placeholder="您的暱稱"
+      />
+      <p>電子信箱</p>
+      <BaseInput
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="email@example.com"
+      />
+      <p>密碼</p>
+      <BaseInput
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        type="password"
+        placeholder="********"
+      />
+      <PrimaryButton>建立帳號</PrimaryButton>
+    </>
+  );
+}
+
+function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  return (
+    <>
+      <p className="text-center text-2xl font-bold">登入</p>
+      <p>電子信箱</p>
+      <BaseInput
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="email@example.com"
+      />
+      <p>密碼</p>
+      <BaseInput
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        type="password"
+        placeholder="********"
+      />
+      <PrimaryButton>登入</PrimaryButton>
+    </>
   );
 }

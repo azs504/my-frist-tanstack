@@ -6,6 +6,8 @@ import { GoPerson } from "react-icons/go";
 import { CiCalendar } from "react-icons/ci";
 import { GoComment } from "react-icons/go";
 import { Color } from "#/components/labels";
+import { Popup } from "#/components/popup";
+import { useState } from "react";
 
 type PostCategory = "惡房東" | "市場行情" | "租屋技巧" | "社區評價";
 
