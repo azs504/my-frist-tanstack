@@ -29,7 +29,10 @@ export default function Header() {
         </div>
 
         <div
-          onClick={() => setDisplayPopup(true)}
+          onClick={() => {
+            setIsRegister(false);
+            setDisplayPopup(true);
+          }}
           className="flex cursor-pointer items-center gap-2 text-[#D7D3D1] hover:text-white"
         >
           <CiLogin />
@@ -38,11 +41,13 @@ export default function Header() {
       </div>
 
       <Popup display={displayPopup} onClose={() => setDisplayPopup(false)}>
-        <div className="flex min-h-[385px] min-w-[300px] flex-col gap-3">
+        <div className="flex min-h-[385px] min-w-[300px] flex-col justify-between gap-3">
           {isRegister ? <Register /> : <Login />}
 
           <div className="flex flex-row items-center justify-center gap-2">
-            <p className="text-sm">還沒有帳號？</p>
+            <p className="text-sm">
+              {isRegister ? "已有帳號？" : "已經有帳號？"}
+            </p>
             <p
               onClick={(e) => {
                 e.stopPropagation();
@@ -50,7 +55,7 @@ export default function Header() {
               }}
               className="cursor-pointer font-bold text-blue-500"
             >
-              立即註冊
+              {isRegister ? "登入" : "立即註冊"}
             </p>
           </div>
         </div>
@@ -65,7 +70,7 @@ function Register() {
   const [password, setPassword] = useState("");
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       <p className="text-center text-2xl font-bold">加入社群</p>
       <p>用戶名稱</p>
       <BaseInput
@@ -87,7 +92,7 @@ function Register() {
         placeholder="********"
       />
       <PrimaryButton>建立帳號</PrimaryButton>
-    </>
+    </div>
   );
 }
 
@@ -96,7 +101,7 @@ function Login() {
   const [password, setPassword] = useState("");
 
   return (
-    <>
+    <div className="flex flex-col gap-3">
       <p className="text-center text-2xl font-bold">登入</p>
       <p>電子信箱</p>
       <BaseInput
@@ -112,6 +117,6 @@ function Login() {
         placeholder="********"
       />
       <PrimaryButton>登入</PrimaryButton>
-    </>
+    </div>
   );
 }

@@ -16,18 +16,18 @@ export function Popup({
     <div
       onClick={onClose}
       className={twMerge(
-        "fixed inset-0 z-50 flex cursor-pointer items-center justify-center bg-black/50",
+        "fixed inset-0 z-50 flex items-center justify-center bg-black/50",
         blur && "backdrop-blur-sm",
         !display && "hidden",
       )}
     >
-      <div className="animate-slide-in-bottom relative rounded-2xl bg-white p-6">
-        <button
-          onClick={onClose}
-          className="flex w-full cursor-pointer justify-end text-gray-500 hover:text-gray-700"
-        >
-          <IoIosClose size={36} />
-        </button>
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="animate-slide-in-bottom relative rounded-2xl bg-white p-6"
+      >
+        <div className="flex w-full justify-end text-gray-500 hover:text-gray-700">
+          <IoIosClose onClick={onClose} className="cursor-pointer" size={40} />
+        </div>
         {children}
       </div>
     </div>
