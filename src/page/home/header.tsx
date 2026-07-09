@@ -43,7 +43,7 @@ export default function Header() {
       </div>
 
       <Popup display={displayPopup} onClose={() => setDisplayPopup(false)}>
-        <div className="flex min-h-[385px] min-w-[300px] flex-col justify-between gap-3">
+        <div className="flex min-h-[400px] min-w-[300px] flex-col justify-between gap-3 text-black">
           {isRegister ? (
             <Register onClose={() => setDisplayPopup(false)} />
           ) : (
@@ -74,6 +74,7 @@ function Register({ onClose }: { onClose: () => void }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isEmailConflict, setIsEmailConflict] = useState(false);
 
   const userMutation = useMutation({
     mutationFn: () =>
@@ -85,6 +86,10 @@ function Register({ onClose }: { onClose: () => void }) {
     },
     onError: (error) => {
       console.error("Register error:", error);
+
+      const errorData = JSON.parse(error.message);
+
+      if (errorData.code === 409) setIsEmailConflict(true);
     },
   });
 
@@ -100,11 +105,18 @@ function Register({ onClose }: { onClose: () => void }) {
         placeholder="您的暱稱"
       />
       <p>電子信箱</p>
-      <BaseInput
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        placeholder="email@example.com"
-      />
+      <div>
+        <BaseInput
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="email@example.com"
+        />
+        <p
+          className={`text-xs ${isEmailConflict ? "text-red-500" : "text-transparent"}`}
+        >
+          *信箱已註冊
+        </p>
+      </div>
       <p>密碼</p>
       <BaseInput
         value={password}
@@ -142,7 +154,7 @@ function Login({ onClose }: { onClose: () => void }) {
         type="password"
         placeholder="********"
       />
-      <PrimaryButton>登入</PrimaryButton>
+      <PrimaryButton disabled={!email || !password}>登入</PrimaryButton>
     </div>
   );
 }
