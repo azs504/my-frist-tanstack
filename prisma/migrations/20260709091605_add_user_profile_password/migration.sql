@@ -5,4 +5,6 @@
 
 */
 -- AlterTable
-ALTER TABLE "UserProfile" ADD COLUMN     "password" TEXT NOT NULL;
+ALTER TABLE "UserProfile" ADD COLUMN "password" TEXT;
+UPDATE "UserProfile" SET "password" = '' WHERE "password" IS NULL;
+ALTER TABLE "UserProfile" ALTER COLUMN "password" SET NOT NULL;

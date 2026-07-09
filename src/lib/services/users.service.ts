@@ -3,7 +3,11 @@ import { db } from "../db";
 export async function getUsersService() {
   return db.userProfile.findMany();
 }
-export async function createUserService(data: { email: string; name: string }) {
+export async function createUserService(data: {
+  email: string;
+  name: string;
+  password: string;
+}) {
   const exists =
     (await db.userProfile.count({
       where: { email: data.email },

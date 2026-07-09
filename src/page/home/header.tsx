@@ -5,6 +5,8 @@ import { CiLogin } from "react-icons/ci";
 import { Popup } from "#/components/popup";
 import { useState } from "react";
 import { PrimaryButton } from "#/components/buttons";
+import { postUsers } from "#/lib/users";
+import { useMutation } from "@tanstack/react-query";
 
 export default function Header() {
   const [displayPopup, setDisplayPopup] = useState(false);
@@ -42,7 +44,11 @@ export default function Header() {
 
       <Popup display={displayPopup} onClose={() => setDisplayPopup(false)}>
         <div className="flex min-h-[385px] min-w-[300px] flex-col justify-between gap-3">
-          {isRegister ? <Register /> : <Login />}
+          {isRegister ? (
+            <Register onClose={() => setDisplayPopup(false)} />
+          ) : (
+            <Login onClose={() => setDisplayPopup(false)} />
+          )}
 
           <div className="flex flex-row items-center justify-center gap-2">
             <p className="text-sm">
@@ -64,10 +70,25 @@ export default function Header() {
   );
 }
 
-function Register() {
+function Register({ onClose }: { onClose: () => void }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const userMutation = useMutation({
+    mutationFn: () =>
+      postUsers({
+        data: { name: username, email, password },
+      }),
+    onSuccess: () => {
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Register error:", error);
+    },
+  });
+
+  const isDisabled = !username || !email || !password || userMutation.isPending;
 
   return (
     <div className="flex flex-col gap-3">
@@ -91,12 +112,17 @@ function Register() {
         type="password"
         placeholder="********"
       />
-      <PrimaryButton>建立帳號</PrimaryButton>
+      <PrimaryButton
+        onClick={() => userMutation.mutate()}
+        disabled={isDisabled}
+      >
+        建立帳號
+      </PrimaryButton>
     </div>
   );
 }
 
-function Login() {
+function Login({ onClose }: { onClose: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
