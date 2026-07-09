@@ -5,12 +5,12 @@ import { CiLogin } from "react-icons/ci";
 import { Popup } from "#/components/popup";
 import { useState } from "react";
 import { PrimaryButton } from "#/components/buttons";
-import { postUsers } from "#/lib/users";
+import { postLogin, postUsers } from "#/lib/users";
 import { useMutation } from "@tanstack/react-query";
+import { twMerge } from "tailwind-merge";
 
 export default function Header() {
   const [displayPopup, setDisplayPopup] = useState(false);
-  const [isRegister, setIsRegister] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-black">
@@ -31,42 +31,63 @@ export default function Header() {
         </div>
 
         <div
-          onClick={() => {
-            setIsRegister(false);
-            setDisplayPopup(true);
-          }}
+          onClick={() => setDisplayPopup(true)}
           className="flex cursor-pointer items-center gap-2 text-[#D7D3D1] hover:text-white"
         >
           <CiLogin />
           <p>登入</p>
         </div>
+
+        <LoginAndRegisterPopup
+          displayPopup={displayPopup}
+          onClose={() => setDisplayPopup(false)}
+        />
       </div>
-
-      <Popup display={displayPopup} onClose={() => setDisplayPopup(false)}>
-        <div className="flex min-h-[400px] min-w-[300px] flex-col justify-between gap-3 text-black">
-          {isRegister ? (
-            <Register onClose={() => setDisplayPopup(false)} />
-          ) : (
-            <Login onClose={() => setDisplayPopup(false)} />
-          )}
-
-          <div className="flex flex-row items-center justify-center gap-2">
-            <p className="text-sm">
-              {isRegister ? "已有帳號？" : "已經有帳號？"}
-            </p>
-            <p
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsRegister((prev) => !prev);
-              }}
-              className="cursor-pointer font-bold text-blue-500"
-            >
-              {isRegister ? "登入" : "立即註冊"}
-            </p>
-          </div>
-        </div>
-      </Popup>
     </header>
+  );
+}
+
+function LoginAndRegisterPopup({
+  displayPopup,
+  onClose,
+}: {
+  displayPopup: boolean;
+  onClose: () => void;
+}) {
+  const [isRegister, setIsRegister] = useState(false);
+  const [resetTrigger, setResetTrigger] = useState(0);
+
+  const handleClosePopup = () => {
+    onClose();
+    setIsRegister(false);
+    setResetTrigger((prev) => prev + 1);
+  };
+
+  return (
+    <Popup display={displayPopup} onClose={handleClosePopup}>
+      <div className="flex min-h-[400px] min-w-[300px] flex-col justify-between gap-3 text-black">
+        {isRegister ? (
+          <Register key={resetTrigger} onClose={handleClosePopup} />
+        ) : (
+          <Login key={resetTrigger} onClose={handleClosePopup} />
+        )}
+
+        <div className="flex flex-row items-center justify-center gap-2">
+          <p className="text-sm">
+            {isRegister ? "已有帳號？" : "已經有帳號？"}
+          </p>
+          <p
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsRegister((prev) => !prev);
+            }}
+            className="cursor-pointer font-bold text-blue-500"
+          >
+            {isRegister ? "登入" : "立即註冊"}
+          </p>
+        </div>
+      </div>
+    </Popup>
   );
 }
 
@@ -76,12 +97,20 @@ function Register({ onClose }: { onClose: () => void }) {
   const [password, setPassword] = useState("");
   const [isEmailConflict, setIsEmailConflict] = useState(false);
 
-  const userMutation = useMutation({
+  const resetForm = () => {
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setIsEmailConflict(false);
+  };
+
+  const createUser = useMutation({
     mutationFn: () =>
       postUsers({
         data: { name: username, email, password },
       }),
     onSuccess: () => {
+      resetForm();
       onClose();
     },
     onError: (error) => {
@@ -93,7 +122,7 @@ function Register({ onClose }: { onClose: () => void }) {
     },
   });
 
-  const isDisabled = !username || !email || !password || userMutation.isPending;
+  const isDisabled = !username || !email || !password || createUser.isPending;
 
   return (
     <div className="flex flex-col gap-3">
@@ -112,7 +141,10 @@ function Register({ onClose }: { onClose: () => void }) {
           placeholder="email@example.com"
         />
         <p
-          className={`text-xs ${isEmailConflict ? "text-red-500" : "text-transparent"}`}
+          className={twMerge(
+            "text-xs",
+            isEmailConflict ? "text-red-500" : "text-transparent",
+          )}
         >
           *信箱已註冊
         </p>
@@ -124,10 +156,7 @@ function Register({ onClose }: { onClose: () => void }) {
         type="password"
         placeholder="********"
       />
-      <PrimaryButton
-        onClick={() => userMutation.mutate()}
-        disabled={isDisabled}
-      >
+      <PrimaryButton onClick={() => createUser.mutate()} disabled={isDisabled}>
         建立帳號
       </PrimaryButton>
     </div>
@@ -137,6 +166,29 @@ function Register({ onClose }: { onClose: () => void }) {
 function Login({ onClose }: { onClose: () => void }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoginError, setIsLoginError] = useState(false);
+
+  const resetForm = () => {
+    setEmail("");
+    setPassword("");
+    setIsLoginError(false);
+  };
+
+  const loginUser = useMutation({
+    mutationFn: () =>
+      postLogin({
+        data: { email, password },
+      }),
+    onSuccess: () => {
+      resetForm();
+      onClose();
+    },
+    onError: (error) => {
+      console.error("Login error:", error);
+
+      setIsLoginError(true);
+    },
+  });
 
   return (
     <div className="flex flex-col gap-3">
@@ -154,7 +206,20 @@ function Login({ onClose }: { onClose: () => void }) {
         type="password"
         placeholder="********"
       />
-      <PrimaryButton disabled={!email || !password}>登入</PrimaryButton>
+      <p
+        className={twMerge(
+          "text-xs",
+          isLoginError ? "text-red-500" : "text-transparent",
+        )}
+      >
+        *信箱或密碼錯誤
+      </p>
+      <PrimaryButton
+        onClick={() => loginUser.mutate()}
+        disabled={!email || !password || loginUser.isPending}
+      >
+        登入
+      </PrimaryButton>
     </div>
   );
 }

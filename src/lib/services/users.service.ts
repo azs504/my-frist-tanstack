@@ -46,5 +46,5 @@ export async function loginUserService(data: {
     );
   }
 
-  return { success: true };
+  return { success: true, user };
 }
