@@ -1,4 +1,5 @@
 import { db } from "../db";
+import type { UserProfile } from "../../types/user";
 
 export async function getUsersService() {
   return db.userProfile.findMany();
@@ -46,5 +47,11 @@ export async function loginUserService(data: {
     );
   }
 
-  return { success: true, user };
+  const response: UserProfile = {
+    id: user.id,
+    email: user.email,
+    name: user.name || "",
+  };
+
+  return { success: true, user: response };
 }

@@ -2,8 +2,6 @@ import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
-import Footer from "#/page/home/footer";
-import Header from "#/page/home/header";
 
 import appCss from "../styles.css?url";
 
@@ -53,9 +51,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         suppressHydrationWarning
       >
         <QueryClientProvider client={queryClient}>
-          <Header />
-          <main className="flex-1 bg-[#F4F2ED]">{children}</main>
-          <Footer />
+          <main className="flex flex-1 flex-col bg-[#F4F2ED]">{children}</main>
           <TanStackDevtools
             config={{
               position: "bottom-right",
@@ -67,6 +63,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
               },
             ]}
           />
+
           <Scripts />
         </QueryClientProvider>
       </body>

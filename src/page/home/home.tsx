@@ -6,8 +6,7 @@ import { GoPerson } from "react-icons/go";
 import { CiCalendar } from "react-icons/ci";
 import { GoComment } from "react-icons/go";
 import { Color } from "#/components/labels";
-import { Popup } from "#/components/popup";
-import { useState } from "react";
+import { HeadAndFootWapper } from "#/components/headAndFootWapper";
 
 type PostCategory = "惡房東" | "市場行情" | "租屋技巧" | "社區評價";
 
@@ -64,13 +63,15 @@ const postDummyData: PostData[] = [
 
 function Home() {
   return (
-    <div className="page-wrap flex flex-col items-center px-[300px] py-6">
-      <Hearder />
+    <HeadAndFootWapper>
+      <div className="page-wrap flex flex-col items-center px-[300px] py-6">
+        <Hearder />
 
-      {postDummyData.map((post) => (
-        <PostCard key={post.id} post={post} />
-      ))}
-    </div>
+        {postDummyData.map((post) => (
+          <PostCard key={post.id} post={post} />
+        ))}
+      </div>
+    </HeadAndFootWapper>
   );
 }
 

@@ -8,6 +8,8 @@ import { PrimaryButton } from "#/components/buttons";
 import { postLogin, postUsers } from "#/lib/users";
 import { useMutation } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
+import { useUserProfile } from "#/providers/useUserProfile";
+import type { UserProfile } from "#/types/user";
 
 export default function Header() {
   const [displayPopup, setDisplayPopup] = useState(false);
@@ -164,6 +166,8 @@ function Register({ onClose }: { onClose: () => void }) {
 }
 
 function Login({ onClose }: { onClose: () => void }) {
+  const { setUserProfile } = useUserProfile();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoginError, setIsLoginError] = useState(false);
@@ -179,7 +183,9 @@ function Login({ onClose }: { onClose: () => void }) {
       postLogin({
         data: { email, password },
       }),
-    onSuccess: () => {
+    onSuccess: (data: { success: boolean; user: UserProfile }) => {
+      setUserProfile(data.user);
+
       resetForm();
       onClose();
     },
