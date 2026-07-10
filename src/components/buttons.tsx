@@ -46,3 +46,25 @@ export function PrimaryButton({
     </BaseButton>
   );
 }
+
+export function SecondaryButton({
+  children,
+  className,
+  onClick,
+  disabled,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+  disabled?: boolean;
+}) {
+  return (
+    <BaseButton
+      className={twMerge("bg-[#7E7771]", className)}
+      onClick={onClick}
+      disabled={disabled}
+    >
+      {children}
+    </BaseButton>
+  );
+}

@@ -1,10 +1,19 @@
+import { postLogin } from "#/lib/users";
 import type { UserProfile } from "#/types/user";
-import { createContext, useContext, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { createContext, useContext, useEffect, useState } from "react";
 
 type UserProfileContextType = {
   userProfile: UserProfile | null;
-  setUserProfile: (userProfile: UserProfile | null) => void;
   logout: () => void;
+  login: ReturnType<
+    typeof useMutation<
+      { success: boolean; user: UserProfile },
+      Error,
+      { email: string; password: string }
+    >
+  >;
+  isLogin: boolean;
 };
 
 const UserProfileContext = createContext<UserProfileContextType | null>(null);
@@ -16,13 +25,38 @@ export function UserProfileProvider({
 }) {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
+  const login = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      postLogin({
+        data: { email, password },
+      }),
+    onSuccess: (data: { success: boolean; user: UserProfile }) => {
+      setUserProfile(data.user);
+
+      localStorage.setItem("userProfile", JSON.stringify(data.user));
+    },
+    onError: (error) => {
+      console.error("Login error:", error);
+    },
+  });
+
   const logout = () => {
     setUserProfile(null);
+
+    localStorage.removeItem("userProfile");
   };
+
+  const isLogin = !!userProfile;
+
+  useEffect(() => {
+    const userProfile = localStorage.getItem("userProfile");
+
+    if (userProfile) setUserProfile(JSON.parse(userProfile));
+  }, []);
 
   return (
     <UserProfileContext.Provider
-      value={{ userProfile, setUserProfile, logout }}
+      value={{ userProfile, logout, login, isLogin }}
     >
       {children}
     </UserProfileContext.Provider>

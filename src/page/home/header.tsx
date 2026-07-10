@@ -2,17 +2,30 @@ import { BaseLabel } from "#/components/labels.tsx";
 import { BaseInput } from "#/components/inputs";
 import { GoSearch } from "react-icons/go";
 import { CiLogin } from "react-icons/ci";
+import { CiLogout } from "react-icons/ci";
+import { IoPersonCircleOutline } from "react-icons/io5";
 import { Popup } from "#/components/popup";
 import { useState } from "react";
-import { PrimaryButton } from "#/components/buttons";
-import { postLogin, postUsers } from "#/lib/users";
+import { PrimaryButton, SecondaryButton } from "#/components/buttons";
+import { postUsers } from "#/lib/users";
 import { useMutation } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
 import { useUserProfile } from "#/providers/useUserProfile";
-import type { UserProfile } from "#/types/user";
 
 export default function Header() {
+  const { isLogin, userProfile } = useUserProfile();
+
   const [displayPopup, setDisplayPopup] = useState(false);
+  const [displayLogoutPopup, setDisplayLogoutPopup] = useState(false);
+
+  const handleClick = () => {
+    if (isLogin) {
+      setDisplayLogoutPopup(true);
+      return;
+    }
+
+    setDisplayPopup(true);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-black">
@@ -33,19 +46,60 @@ export default function Header() {
         </div>
 
         <div
-          onClick={() => setDisplayPopup(true)}
+          onClick={handleClick}
           className="flex cursor-pointer items-center gap-2 text-[#D7D3D1] hover:text-white"
         >
-          <CiLogin />
-          <p>登入</p>
+          {userProfile?.name && (
+            <>
+              <IoPersonCircleOutline className="text-2xl" />
+              <p className="text-sm">{userProfile?.name}</p>
+            </>
+          )}
+
+          {isLogin ? <CiLogout /> : <CiLogin />}
+          <p>{isLogin ? "登出" : "登入"}</p>
         </div>
 
         <LoginAndRegisterPopup
           displayPopup={displayPopup}
           onClose={() => setDisplayPopup(false)}
         />
+
+        <LogoutPopup
+          displayPopup={displayLogoutPopup}
+          onClose={() => setDisplayLogoutPopup(false)}
+        />
       </div>
     </header>
+  );
+}
+
+function LogoutPopup({
+  displayPopup,
+  onClose,
+}: {
+  displayPopup: boolean;
+  onClose: () => void;
+}) {
+  const { logout } = useUserProfile();
+
+  return (
+    <Popup display={displayPopup} onClose={onClose}>
+      <div className="flex flex-col items-center gap-4">
+        <p className="mx-4 text-center text-xl font-bold">確定要登出嗎？</p>
+        <div className="flex flex-row items-center justify-center gap-2">
+          <PrimaryButton onClick={onClose}>取消</PrimaryButton>
+          <SecondaryButton
+            onClick={() => {
+              logout();
+              onClose();
+            }}
+          >
+            確定
+          </SecondaryButton>
+        </div>
+      </div>
+    </Popup>
   );
 }
 
@@ -166,7 +220,7 @@ function Register({ onClose }: { onClose: () => void }) {
 }
 
 function Login({ onClose }: { onClose: () => void }) {
-  const { setUserProfile } = useUserProfile();
+  const { login } = useUserProfile();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -178,23 +232,20 @@ function Login({ onClose }: { onClose: () => void }) {
     setIsLoginError(false);
   };
 
-  const loginUser = useMutation({
-    mutationFn: () =>
-      postLogin({
-        data: { email, password },
-      }),
-    onSuccess: (data: { success: boolean; user: UserProfile }) => {
-      setUserProfile(data.user);
-
-      resetForm();
-      onClose();
-    },
-    onError: (error) => {
-      console.error("Login error:", error);
-
-      setIsLoginError(true);
-    },
-  });
+  const handleLogin = () => {
+    login.mutate(
+      { email, password },
+      {
+        onSuccess: () => {
+          onClose();
+          resetForm();
+        },
+        onError: () => {
+          setIsLoginError(true);
+        },
+      },
+    );
+  };
 
   return (
     <div className="flex flex-col gap-3">
@@ -221,8 +272,8 @@ function Login({ onClose }: { onClose: () => void }) {
         *信箱或密碼錯誤
       </p>
       <PrimaryButton
-        onClick={() => loginUser.mutate()}
-        disabled={!email || !password || loginUser.isPending}
+        onClick={handleLogin}
+        disabled={!email || !password || login.isPending}
       >
         登入
       </PrimaryButton>
