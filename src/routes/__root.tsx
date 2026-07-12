@@ -1,7 +1,16 @@
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import {
+  HeadContent,
+  Scripts,
+  createRootRoute,
+  Outlet,
+} from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { TanStackDevtools } from "@tanstack/react-devtools";
+import {
+  UserProfileProvider,
+  useUserProfile,
+} from "#/providers/useUserProfile";
 
 import appCss from "../styles.css?url";
 
@@ -34,12 +43,22 @@ export const Route = createRootRoute({
       <h1>Page Not Found</h1>
     </div>
   ),
-  shellComponent: RootDocument,
+  component: RootLayout,
 });
 
-const queryClient = new QueryClient();
+function RootLayout() {
+  const queryClient = new QueryClient();
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <UserProfileProvider>
+        <RootDocument />
+      </UserProfileProvider>
+    </QueryClientProvider>
+  );
+}
+
+function RootDocument() {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -50,22 +69,22 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         className="flex min-h-screen flex-col font-sans [overflow-wrap:anywhere] antialiased selection:bg-[rgba(79,184,178,0.24)]"
         suppressHydrationWarning
       >
-        <QueryClientProvider client={queryClient}>
-          <main className="flex flex-1 flex-col bg-[#F4F2ED]">{children}</main>
-          <TanStackDevtools
-            config={{
-              position: "bottom-right",
-            }}
-            plugins={[
-              {
-                name: "Tanstack Router",
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
+        <main className="flex flex-1 flex-col bg-[#F4F2ED]">
+          <Outlet />
+        </main>
+        <TanStackDevtools
+          config={{
+            position: "bottom-right",
+          }}
+          plugins={[
+            {
+              name: "Tanstack Router",
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
 
-          <Scripts />
-        </QueryClientProvider>
+        <Scripts />
       </body>
     </html>
   );

@@ -86,7 +86,9 @@ function LogoutPopup({
   return (
     <Popup display={displayPopup} onClose={onClose}>
       <div className="flex flex-col items-center gap-4">
-        <p className="mx-4 text-center text-xl font-bold">確定要登出嗎？</p>
+        <p className="mx-4 text-center text-xl font-bold text-black">
+          確定要登出嗎？
+        </p>
         <div className="flex flex-row items-center justify-center gap-2">
           <PrimaryButton onClick={onClose}>取消</PrimaryButton>
           <SecondaryButton
