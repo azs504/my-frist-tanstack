@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthProfileRouteImport } from './routes/_auth/profile'
+import { Route as AuthMyRouteImport } from './routes/_auth/my'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/_auth',
@@ -27,27 +28,35 @@ const AuthProfileRoute = AuthProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthMyRoute = AuthMyRouteImport.update({
+  id: '/my',
+  path: '/my',
+  getParentRoute: () => AuthRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/my': typeof AuthMyRoute
   '/profile': typeof AuthProfileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/my': typeof AuthMyRoute
   '/profile': typeof AuthProfileRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
+  '/_auth/my': typeof AuthMyRoute
   '/_auth/profile': typeof AuthProfileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/profile'
+  fullPaths: '/' | '/my' | '/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/profile'
-  id: '__root__' | '/' | '/_auth' | '/_auth/profile'
+  to: '/' | '/my' | '/profile'
+  id: '__root__' | '/' | '/_auth' | '/_auth/my' | '/_auth/profile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -78,14 +87,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProfileRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/my': {
+      id: '/_auth/my'
+      path: '/my'
+      fullPath: '/my'
+      preLoaderRoute: typeof AuthMyRouteImport
+      parentRoute: typeof AuthRoute
+    }
   }
 }
 
 interface AuthRouteChildren {
+  AuthMyRoute: typeof AuthMyRoute
   AuthProfileRoute: typeof AuthProfileRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
+  AuthMyRoute: AuthMyRoute,
   AuthProfileRoute: AuthProfileRoute,
 }
 

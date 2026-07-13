@@ -11,14 +11,17 @@ import { postUsers } from "#/lib/users";
 import { useMutation } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
 import { useUserProfile } from "#/providers/useUserProfile";
+import { useNavigate, useLocation } from "@tanstack/react-router";
 
 export default function Header() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const { isLogin, userProfile } = useUserProfile();
 
   const [displayPopup, setDisplayPopup] = useState(false);
   const [displayLogoutPopup, setDisplayLogoutPopup] = useState(false);
 
-  const handleClick = () => {
+  const handleLoginAndLogout = () => {
     if (isLogin) {
       setDisplayLogoutPopup(true);
       return;
@@ -27,10 +30,19 @@ export default function Header() {
     setDisplayPopup(true);
   };
 
+  const changePageTo = (page: string) => {
+    if (location.pathname === page) return;
+
+    navigate({ to: page });
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-black">
-      <div className="container mx-auto flex flex-row items-center justify-between px-8 py-3">
-        <div className="flex flex-row items-center gap-2">
+      <div className="container mx-auto flex flex-row items-center justify-between px-8 py-2">
+        <div
+          onClick={() => changePageTo("/")}
+          className="flex cursor-pointer flex-row items-center gap-2"
+        >
           <BaseLabel color="DarkRed">租屋</BaseLabel>
 
           <h1 className="font-bold text-white">公開誌</h1>
@@ -45,19 +57,27 @@ export default function Header() {
           <GoSearch className="absolute top-1/2 right-3 -translate-y-1/2 transform text-gray-400" />
         </div>
 
-        <div
-          onClick={handleClick}
-          className="flex cursor-pointer items-center gap-2 text-[#D7D3D1] hover:text-white"
-        >
+        <div className="flex cursor-pointer items-center gap-2 text-[#D7D3D1]">
           {userProfile?.name && (
-            <>
+            <div
+              onClick={() => changePageTo("/my")}
+              className={twMerge(
+                "flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1 hover:text-white",
+                location.pathname === "/my" && "bg-[#2A2624]",
+              )}
+            >
               <IoPersonCircleOutline className="text-2xl" />
               <p className="text-sm">{userProfile?.name}</p>
-            </>
+            </div>
           )}
 
-          {isLogin ? <CiLogout /> : <CiLogin />}
-          <p>{isLogin ? "登出" : "登入"}</p>
+          <div
+            onClick={handleLoginAndLogout}
+            className="flex items-center gap-1 hover:text-white"
+          >
+            {isLogin ? <CiLogout /> : <CiLogin />}
+            <p>{isLogin ? "登出" : "登入"}</p>
+          </div>
         </div>
 
         <LoginAndRegisterPopup
@@ -81,6 +101,8 @@ function LogoutPopup({
   displayPopup: boolean;
   onClose: () => void;
 }) {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { logout } = useUserProfile();
 
   return (
@@ -93,6 +115,8 @@ function LogoutPopup({
           <PrimaryButton onClick={onClose}>取消</PrimaryButton>
           <SecondaryButton
             onClick={() => {
+              if (location.pathname !== "/") navigate({ to: "/" });
+
               logout();
               onClose();
             }}
