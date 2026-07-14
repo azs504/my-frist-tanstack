@@ -4,6 +4,7 @@ import { GoSearch } from "react-icons/go";
 import { CiLogin } from "react-icons/ci";
 import { CiLogout } from "react-icons/ci";
 import { IoPersonCircleOutline } from "react-icons/io5";
+import { IoAdd } from "react-icons/io5";
 import { Popup } from "#/components/popup";
 import { useState } from "react";
 import { PrimaryButton, SecondaryButton } from "#/components/buttons";
@@ -58,6 +59,15 @@ export default function Header() {
         </div>
 
         <div className="flex cursor-pointer items-center gap-2 text-[#D7D3D1]">
+          {userProfile?.name && (
+            <div
+              onClick={() => changePageTo("/post")}
+              className="flex items-center gap-1 hover:text-white"
+            >
+              <IoAdd className="text-2xl font-bold" />
+            </div>
+          )}
+
           {userProfile?.name && (
             <div
               onClick={() => changePageTo("/my")}

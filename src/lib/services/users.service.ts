@@ -1,10 +1,6 @@
 import { db } from "../db";
 import type { UserProfile } from "../../types/user";
 
-export async function getUsersService() {
-  return db.userProfile.findMany();
-}
-
 export async function createUserService(data: {
   email: string;
   name: string;

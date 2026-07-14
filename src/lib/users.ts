@@ -1,13 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import {
-  createUserService,
-  getUsersService,
-  loginUserService,
-} from "./services/users.service";
-
-export const fetchUsers = createServerFn({ method: "GET" }).handler(
-  getUsersService,
-);
+import { createUserService, loginUserService } from "./services/users.service";
 
 export const postUsers = createServerFn({ method: "POST" })
   .validator((data: { name: string; email: string; password: string }) => data)
