@@ -12,6 +12,34 @@ datasource db {
   provider = "postgresql"
 }
 
+enum PostCategory {
+  BadLandlord
+  MarketInfo
+  RentalTips
+  CommunityReview
+}
+
+enum Location {
+  Taipei
+  NewTaipei
+  Keelung
+  Taoyuan
+  Hsinchu
+  HsinchuCounty
+  Miaoli
+  Taichung
+  Changhua
+  Nantou
+  Yunlin
+  Chiayi
+  Tainan
+  Kaohsiung
+  Pingtung
+  Yilan
+  Hualien
+  Taitung
+}
+
 model UserProfile {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   index     Int      @default(autoincrement())
@@ -28,8 +56,8 @@ model Post {
   id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title     String
   content   String
-  location  String
-  category  String
+  location  Location
+  category  PostCategory
   isTop     Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

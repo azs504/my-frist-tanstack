@@ -66,7 +66,7 @@ function BottomSelection() {
             )}
             onClick={() => setActiveTab(tab.id)}
           >
-            {tab.label}
+            <p className="text-black">{tab.label}</p>
           </div>
         ))}
       </div>
