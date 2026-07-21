@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteImport } from './routes/_auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthProfileRouteImport } from './routes/_auth/profile'
+import { Route as AuthNewPostRouteImport } from './routes/_auth/new-post'
 import { Route as AuthMyRouteImport } from './routes/_auth/my'
 
 const AuthRoute = AuthRouteImport.update({
@@ -28,6 +29,11 @@ const AuthProfileRoute = AuthProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthNewPostRoute = AuthNewPostRouteImport.update({
+  id: '/new-post',
+  path: '/new-post',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthMyRoute = AuthMyRouteImport.update({
   id: '/my',
   path: '/my',
@@ -37,11 +43,13 @@ const AuthMyRoute = AuthMyRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/my': typeof AuthMyRoute
+  '/new-post': typeof AuthNewPostRoute
   '/profile': typeof AuthProfileRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/my': typeof AuthMyRoute
+  '/new-post': typeof AuthNewPostRoute
   '/profile': typeof AuthProfileRoute
 }
 export interface FileRoutesById {
@@ -49,14 +57,21 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/_auth/my': typeof AuthMyRoute
+  '/_auth/new-post': typeof AuthNewPostRoute
   '/_auth/profile': typeof AuthProfileRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/my' | '/profile'
+  fullPaths: '/' | '/my' | '/new-post' | '/profile'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/my' | '/profile'
-  id: '__root__' | '/' | '/_auth' | '/_auth/my' | '/_auth/profile'
+  to: '/' | '/my' | '/new-post' | '/profile'
+  id:
+    | '__root__'
+    | '/'
+    | '/_auth'
+    | '/_auth/my'
+    | '/_auth/new-post'
+    | '/_auth/profile'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -87,6 +102,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthProfileRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_auth/new-post': {
+      id: '/_auth/new-post'
+      path: '/new-post'
+      fullPath: '/new-post'
+      preLoaderRoute: typeof AuthNewPostRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_auth/my': {
       id: '/_auth/my'
       path: '/my'
@@ -99,11 +121,13 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteChildren {
   AuthMyRoute: typeof AuthMyRoute
+  AuthNewPostRoute: typeof AuthNewPostRoute
   AuthProfileRoute: typeof AuthProfileRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthMyRoute: AuthMyRoute,
+  AuthNewPostRoute: AuthNewPostRoute,
   AuthProfileRoute: AuthProfileRoute,
 }
 

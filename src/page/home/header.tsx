@@ -13,6 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import { twMerge } from "tailwind-merge";
 import { useUserProfile } from "#/providers/useUserProfile";
 import { useNavigate, useLocation } from "@tanstack/react-router";
+import type { LinkProps } from "@tanstack/react-router";
 
 export default function Header() {
   const navigate = useNavigate();
@@ -31,7 +32,7 @@ export default function Header() {
     setDisplayPopup(true);
   };
 
-  const changePageTo = (page: string) => {
+  const changePageTo = (page: LinkProps["to"]) => {
     if (location.pathname === page) return;
 
     navigate({ to: page });
@@ -61,8 +62,11 @@ export default function Header() {
         <div className="flex cursor-pointer items-center gap-2 text-[#D7D3D1]">
           {userProfile?.name && (
             <div
-              onClick={() => changePageTo("/post")}
-              className="flex items-center gap-1 hover:text-white"
+              onClick={() => changePageTo("/new-post")}
+              className={twMerge(
+                "flex items-center gap-1 rounded-lg px-2 py-1 hover:text-white",
+                location.pathname === "/new-post" && "bg-[#2A2624]",
+              )}
             >
               <IoAdd className="text-2xl font-bold" />
             </div>
@@ -72,7 +76,7 @@ export default function Header() {
             <div
               onClick={() => changePageTo("/my")}
               className={twMerge(
-                "flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1 hover:text-white",
+                "flex items-center gap-1 rounded-lg px-2 py-1 hover:text-white",
                 location.pathname === "/my" && "bg-[#2A2624]",
               )}
             >
